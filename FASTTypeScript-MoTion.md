@@ -69,6 +69,41 @@ pattern := FASTTypeScriptProgram % {
 results := pattern collectBindings: { #ifStmt. #elseClause } for: prog.
 ```
 
+### 4.3) Try/catch: checking nested try/catch
+```smalltalk
+string := 'function run() {
+  try {
+    try {
+      task1();
+    } catch (e) {
+      console.log("Error in task1");
+      throw e; // rethrow
+    }
+
+    try {
+      task2();
+    } catch (e) {
+      console.log("Error in task2");
+      throw e; // rethrow
+    }
+
+  } catch (e) {
+    console.error("Centralized error handler:", e);
+  }
+}'.
+
+res := FASTTypeScriptParser new parse: string.
+prog := (res entities select: [ :ent | ent class = FASTTypeScriptProgram ]) first.
+
+pattern := FASTTypeScriptProgram % {
+  #'children*' <=> (FASTTypeScriptTryStatement % {
+    #'children*' <=> (FASTTypeScriptTryStatement % { } as: #innerTry)
+  } as: #outerTry)
+}.
+
+results := pattern collectBindings: { #outerTry. #innerTry } for: prog. 
+```
+
 ## 4) Debugging tips
 
 ### 4.1) Inspect children to learn structure
