@@ -70,6 +70,7 @@ results := pattern collectBindings: { #ifStmt. #elseClause } for: prog.
 ```
 
 ### 4.3) Try/catch: checking nested try/catch
+```smalltalk
 pattern := FASTTypeScriptProgram % {
   #'children*' <=> (FASTTypeScriptTryStatement % {
     #'children*' <=> (FASTTypeScriptTryStatement % { } as: #innerTry)
