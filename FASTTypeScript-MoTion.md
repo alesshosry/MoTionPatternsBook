@@ -3,8 +3,8 @@
 This document is a living cookbook for writing MoTion patterns over the FASTTypeScript AST/model.
 
 ## 1) Requirements / Packages
-- FASTTypescript (metamodel + parser) https://github.com/moosetechnology/FASTTypescript
-- MoTion github.com/alesshosry/Motion
+- [FASTTypescript (metamodel + parser)](https://github.com/moosetechnology/FASTTypescript)
+- [MoTion](https://github.com/alesshosry/Motion)
 
 ## 2) Parse TypeScript and get the Program node
 
