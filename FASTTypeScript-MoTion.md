@@ -24,7 +24,7 @@ Use `#'children*'` from `FASTTypeScriptProgram` to search anywhere in the AST su
 
 ```smalltalk
 pattern := FASTTypeScriptProgram % {
-  #'children*' <=> (SomeNodeClass % { } as: #aNode)
+  #'children*' <=> SomeNodeClass % { } as: #aNode
 }.
 results := pattern collectBindings: { #aNode } for: prog.
 ```
@@ -34,7 +34,7 @@ Use `#genericChildren` (no `*`) with list patterns when you need **direct** stru
 
 ```smalltalk
 pattern := SomeNodeClass % {
-  #genericChildren <=> { #'*_'. (ChildNodeClass % { } as: #child). #'*_' }
+  #genericChildren <=> { #'*_'. ChildNodeClass % { } as: #child. #'*_' }
 }.
 "this means you are looking for a SomeNodeClass that has direct children ChildNodeClass and possibly other children #'*_' "
 ```
@@ -58,13 +58,13 @@ results := pattern collectBindings: { #switchStmt. #case1. #case2. #default } fo
 ### 4.2) If/Else: direct else clause (avoids descendant cross-products)
 ```smalltalk
 pattern := FASTTypeScriptProgram % {
-  #'children*' <=> (FASTTypeScriptIfStatement % {
+  #'children*' <=> FASTTypeScriptIfStatement % {
     #genericChildren <=> {
       #'*_'.
-      (FASTTypeScriptElseClause % { } as: #elseClause).
+      FASTTypeScriptElseClause % { } as: #elseClause.
       #'*_'
     }
-  } as: #ifStmt)
+  } as: #ifStmt
 }.
 results := pattern collectBindings: { #ifStmt. #elseClause } for: prog.
 ```
@@ -72,9 +72,9 @@ results := pattern collectBindings: { #ifStmt. #elseClause } for: prog.
 ### 4.3) Try/catch: checking nested try/catch
 ```smalltalk
 pattern := FASTTypeScriptProgram % {
-  #'children*' <=> (FASTTypeScriptTryStatement % {
-    #'children*' <=> (FASTTypeScriptTryStatement % { } as: #innerTry)
-  } as: #outerTry)
+  #'children*' <=> FASTTypeScriptTryStatement % {
+    #'children*' <=> FASTTypeScriptTryStatement % { } as: #innerTry
+  } as: #outerTry
 }.
 
 results := pattern collectBindings: { #outerTry. #innerTry } for: prog. 
