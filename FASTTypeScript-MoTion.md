@@ -80,14 +80,28 @@ pattern := FASTTypeScriptProgram % {
 results := pattern collectBindings: { #outerTry. #innerTry } for: prog. 
 ```
 
-## 4) Debugging tips
+### 4.4) Counting 3 methods in class
+```smalltalk
+res := FASTTypeScriptParser new parse: string.
+prog := (res entities select: [ :ent | ent class = FASTTypeScriptClassBody ]) first.
+ 
+pattern := FASTTypeScriptClassBody % {
+  #'children' <=>  {  
+		FASTTypeScriptMethodDefinition % {} as: #m1.
+		FASTTypeScriptMethodDefinition % {} as: #m2.   
+		FASTTypeScriptMethodDefinition % {} as: #m3.       
+  }.
+}.
+```
 
-### 4.1) Inspect children to learn structure
+## 5) Debugging tips
+
+### 5.1) Inspect children to learn structure
 ```smalltalk
 node genericChildren collect: #class.
 node genericChildren.
 ```
 
-### 4.2) Why you got too many matches
+### 5.2) Why you got too many matches
 - Using `#'genericChildren*'` matches *descendants*, producing cross-products when nested structures exist.
 - Prefer `#genericChildren` when you mean “direct child”.
