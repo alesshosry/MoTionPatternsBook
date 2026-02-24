@@ -14,7 +14,8 @@ res := FASTTypeScriptParser new parse: string.
 "res will be a FASTTypeScriptModel; we need to access the #entities inside👇🏻"
 
 "Program entity: is the top entity of every TypeScript AST"
-prog := (res entities detect: [ :ent | ent class = FASTTypeScriptProgram ]) first "first because a collection will be returned containing only one entity of type FASTTypeScriptProgram which is the top entity".
+prog := (res entities detect: [ :ent | ent class = FASTTypeScriptProgram ]) first
+"first because a collection will be returned containing only one entity of type FASTTypeScriptProgram which is the top entity".
 ```
 
 ## 3) Core MoTion traversal idioms
@@ -82,15 +83,27 @@ results := pattern collectBindings: { #outerTry. #innerTry } for: prog.
 
 ### 4.4) Counting 3 methods in class
 ```smalltalk
+string := 'class Example {
+  methodWithInt() {
+    let x: int = 10;
+    console.log(x);
+  }
+  methodWithoutInt() {
+    let name: string = "hello";
+    console.log(name);
+  }
+}'.
+
 res := FASTTypeScriptParser new parse: string.
-prog := (res entities select: [ :ent | ent class = FASTTypeScriptClassBody ]) first.
+prog := (res entities select: [ :ent | ent class = FASTTypeScriptProgram ]) first.
  
-pattern := FASTTypeScriptClassBody % {
-  #'children' <=>  {  
-		FASTTypeScriptMethodDefinition % {} as: #m1.
-		FASTTypeScriptMethodDefinition % {} as: #m2.   
-		FASTTypeScriptMethodDefinition % {} as: #m3.       
-  }.
+pattern :=  FASTTypeScriptProgram % {
+	#'children*' <=> FASTTypeScriptClassBody % {
+  		#'children' <=>  {  
+			FASTTypeScriptMethodDefinition % {} as: #m1.
+			FASTTypeScriptMethodDefinition % {} as: #m2.      
+  		}.
+	}. 
 }.
 ```
 
@@ -110,23 +123,19 @@ class Example {
     }
 }
 '.
- 
+
 parsedModel := FASTTypeScriptParser new parse: typescriptCode.
- 
-methodDefinitions := parsedModel entities select: [ :ent | ent class = FASTTypeScriptMethodDefinition ].
- 
-pattern := FASTTypeScriptMethodDefinition % {
-    #'body' <=> FASTTypeScriptStatementBlock % {
+prog := (parsedModel entities select: [ :ent | ent class = FASTTypeScriptProgram ]) first.
+
+pattern := FASTTypeScriptProgram % {
+	 #'children*' <=> FASTTypeScriptMethodDefinition % {
+    	#'body' <=> FASTTypeScriptStatementBlock % {
         #'children' <=> {}
-    }
-} as: #emptyFunction.
- 
-allBindings := OrderedCollection new.
-methodDefinitions do: [ :methodDef |
-    bindings := pattern collectBindings: { #emptyFunction } for: methodDef.
-    allBindings addAll: bindings
-].
- 
+		}
+	}as: #emptyFunction.
+}.
+
+bindings := pattern collectBindings: { #emptyFunction } for: prog. 
 ```
 
 ## 5) Debugging tips
