@@ -138,6 +138,63 @@ pattern := FASTTypeScriptProgram % {
 bindings := pattern collectBindings: { #emptyFunction } for: prog. 
 ```
 
+### 4.6) Check if any function or method contain empty else
+```
+str := 'function processValue(a: number) {
+    if (a > 10) {
+        console.log("big");
+    } else { 
+    }
+}
+
+class Calculator {
+    compute(x: number) {
+        if (x === 0) {
+            return 0;
+        } else {
+            console.log("not zero");
+        }
+    }
+
+    check(y: number) {
+        if (y < 5) {
+            console.log("small");
+        } else { 
+        }
+    }
+}'.
+
+res := FASTTypeScriptParser new parse: str.
+prog := (res entities select: [ :ent | ent class = FASTTypeScriptProgram ]) first.
+
+emptyElsePattern :=
+FASTTypeScriptElseClause % {        
+    #children <=> FASTTypeScriptStatementBlock % { 
+        #children <=> {}
+    }     
+} as: #emptyElse.
+
+
+functionOwnerPattern :=
+FASTTypeScriptProgram % {
+    #'children*' <=> FASTTypeScriptFunctionDeclaration %% {
+        #name <=> #'@ownerName'.
+        #'body>children*' <=> emptyElsePattern
+    }
+}.
+
+methodOwnerPattern :=
+FASTTypeScriptProgram % {
+    #'children*' <=> FASTTypeScriptMethodDefinition %% {
+        #name <=> #'@ownerName'.
+        #'body>children*' <=> emptyElsePattern
+    }
+}.
+
+(functionOwnerPattern collectBindings: { #ownerName } for: prog).
+(methodOwnerPattern collectBindings: { #ownerName } for: prog).
+```
+
 ## 5) Debugging tips
 
 ### 5.1) Inspect children to learn structure
