@@ -138,8 +138,8 @@ pattern := FASTTypeScriptProgram % {
 bindings := pattern collectBindings: { #emptyFunction } for: prog. 
 ```
 
-### 4.6) Check if any function or method contain empty else
-```
+### 4.6) Check if any function or method contain empty else and retrieve the owner
+```smalltalk
 str := 'function processValue(a: number) {
     if (a > 10) {
         console.log("big");
