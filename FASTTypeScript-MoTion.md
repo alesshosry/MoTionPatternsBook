@@ -1,6 +1,6 @@
 # FASTTypeScript + MoTion Playbook (Pharo)
 
-This document is a living cookbook for writing MoTion patterns over the FASTTypeScript AST/model.
+This document is dedicated for writing MoTion patterns over the FASTTypeScript AST/model. Some may want to find the if/else clause in a page, others may need the switch case, others specifc search. This is why you can benefit from MoTion to express the pattern you want, and use FASTTypeScript metamodel which allows representing the AST of TypeScript in Pharo. The combination of both tools, will allow you to apply such search. 
 
 ## 1) Requirements / Packages
 - [FASTTypescript (metamodel + parser)](https://github.com/moosetechnology/FASTTypescript)
