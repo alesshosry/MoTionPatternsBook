@@ -4,5 +4,5 @@ This is a book for patterns that can be used with MoTion; it will be handy to pr
 ## MoTion
 If you want to know how to use MoTion you can refer to [this page](https://github.com/alesshosry/MoTionPatternsBook/blob/main/MoTion.md).
 
-## TypeScript AST
+## FASTTypeScript(TypeScript AST) + MoTion
 If you want to search for TypeScript AST using MoTion, you can refer to [this page](https://github.com/alesshosry/MoTionPatternsBook/blob/main/FASTTypeScript-MoTion.md).
