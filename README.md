@@ -1,11 +1,13 @@
 # MoTionPatternsBook
-This is a book for patterns that can be used with MoTion; it will be handy to provide it to AI tools so they learn how they can use MoTion and help you create MoTion patterns if you're not familiar with it, based on your description
+Don't know how to use MoTion? Complicated DSL? No worries!
+We have a solution for you. A way to benefit from AI so it will create patterns for you.
+This is a book that helps you to create MoTion patterns using AI;
 
 ## MoTion
-If you want to know how to use MoTion you can refer to [this page](https://github.com/alesshosry/MoTionPatternsBook/blob/main/MoTion.md).
+If you want the AI to know how to use MoTion you can refer to [this page](https://github.com/alesshosry/MoTionPatternsBook/blob/main/MoTion.md).
 
 ## FASTTypeScript(TypeScript AST) + MoTion
-If you want to search for TypeScript AST using MoTion, you can refer to [this page](https://github.com/alesshosry/MoTionPatternsBook/blob/main/FASTTypeScript-MoTion.md).
+If you want to let the AI create patterns that match TypeScript AST using MoTion, you can ask it to refer to [this page](https://github.com/alesshosry/MoTionPatternsBook/blob/main/FASTTypeScript-MoTion.md).
 
 # Usage
 
