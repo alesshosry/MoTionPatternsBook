@@ -94,6 +94,41 @@ pattern := FASTTypeScriptClassBody % {
 }.
 ```
 
+### 4.5) Check if method is empty
+```smalltalk
+typescriptCode := '
+function emptyFunction() {}
+
+function nonEmptyFunction() {
+    console.log("Hello, world!");
+}
+
+class Example {
+    emptyMethod() {}
+    nonEmptyMethod() {
+        return 42;
+    }
+}
+'.
+ 
+parsedModel := FASTTypeScriptParser new parse: typescriptCode.
+ 
+methodDefinitions := parsedModel entities select: [ :ent | ent class = FASTTypeScriptMethodDefinition ].
+ 
+pattern := FASTTypeScriptMethodDefinition % {
+    #'body' <=> FASTTypeScriptStatementBlock % {
+        #'children' <=> {}
+    }
+} as: #emptyFunction.
+ 
+allBindings := OrderedCollection new.
+methodDefinitions do: [ :methodDef |
+    bindings := pattern collectBindings: { #emptyFunction } for: methodDef.
+    allBindings addAll: bindings
+].
+ 
+```
+
 ## 5) Debugging tips
 
 ### 5.1) Inspect children to learn structure
