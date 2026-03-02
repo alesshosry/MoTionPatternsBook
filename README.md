@@ -1,4 +1,4 @@
-# MoTionPatternsBook
+# MoTionPatternsBookForAI
 Don't know how to use MoTion? Complicated DSL? No worries!
 We have a solution for you. A way to benefit from AI so it will create patterns for you.
 This is a book that helps you to create MoTion patterns using AI;
