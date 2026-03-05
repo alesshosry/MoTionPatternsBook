@@ -40,8 +40,78 @@ pattern := SomeNodeClass % {
 ```
 
 ## 4) Example patterns
-"comming soon"
 
+### 4.1) Retrieve empty xml tags
+
+```smalltalk
+str := '<data>
+  <name>Tanmay Patil</name>
+  <company></company>
+  <phone></phone> 
+</data>'.
+
+tree := FASTXMLParser new parse: str.
+doc := (tree select: [ :e | e class =  FASTXMLDocument ]) first.
+
+"Extract data of the address"
+
+pattern := FASTXMLDocument % {	 
+				#'children*' <=> FASTXMLElement % { 
+					#'children' <=> {
+						FASTXMLSTag % {}  .  
+						FASTXMLETag % {} . 
+					}.
+				} as: #xmlElement
+			}.  
+
+pattern collectBindings: {#xmlElement. } for: doc.   
+```
+
+### 4.1) The most complex pattern: retrieve address data from xml tag
+
+```smalltalk
+str := '<address>
+  <name>Tanmay Patil</name>
+  <company>TutorialsPoint</company>
+  <phone>(011) 123-4567</phone>
+</address>'.
+
+tree := FASTXMLParser new parse: str.
+doc := (tree select: [ :e | e class =  FASTXMLDocument ]) first.
+
+"Extract data of the address"
+
+pattern := FASTXMLDocument % {	
+	#'children' <=> FASTXMLElement % { 
+		#'children' <=> { 
+			#'*_'.	 
+			FASTXMLSTag % { 
+				#'children>sourceCode' <=> 'address'
+			}.
+			#'*_'.	 
+			FASTXMLContent % { 
+				#'children' <=> FASTXMLElement % { 
+					#'children' <=> {    
+						#'*_'.	 
+						FASTXMLSTag % { 
+							#'children>sourceCode' <=> #'@tag'
+						}. 
+						#'*_'.	
+						FASTXMLContent % { 
+							#'children>sourceCode' <=> #'@content'
+						}.
+						#'*_'.	 
+					}
+				}
+			}.
+			#'*_'.	 
+		}	
+	} 
+}.
+
+pattern match: doc. 
+```
+ 
 ## 5) Debugging tips
 
 ### 5.1) Inspect children to learn structure

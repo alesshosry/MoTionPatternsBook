@@ -32,5 +32,4 @@ I will update this section for more details later on.
 - I will try to adapt it to be used in Pharo directly ... we are ambitious but will give it a try :)
 - More documentations will be added for other FAST metamodels, and why not Famix also :)
 
-
 Feel free to contribute :) 
