@@ -1,0 +1,4 @@
+interface:
+  display_name: "MoTion AST Patterns"
+  short_description: "Use MoTion docs to create patterns in Pharo for TS AST and XML."
+  default_prompt: "Create or update MoTion patterns in Pharo by loading the relevant references for TypeScript AST or XML."
