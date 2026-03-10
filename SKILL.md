@@ -1,6 +1,6 @@
 ---
 name: motion-pharo-ast-patterns
-description: Create MoTion patterns in Pharo to match FAST models. Use when a user asks to write or adapt MoTion patterns for TypeScript AST or XML AST. Route TypeScript work to MoTion.md + FASTTypeScript-MoTion.md, and XML work to MoTion.md + FASTXML-MoTion.md.
+description: Create MoTion patterns in Pharo to match FAST models. Use when a user asks to write or adapt MoTion patterns for TypeScript AST, Java AST or XML AST. Route TypeScript work to MoTion.md + FASTTypeScript-MoTion.md, and XML work to MoTion.md + FASTXML-MoTion.md, and Java work to MoTion.md + FASTJava-MoTion.md.
 ---
 
 # MoTion Pharo AST Patterns
@@ -12,6 +12,7 @@ description: Create MoTion patterns in Pharo to match FAST models. Use when a us
 3. Load exactly one domain guide:
 - TypeScript AST: `references/FASTTypeScript-MoTion.md`
 - XML AST: `references/FASTXML-MoTion.md`
+- Java AST: `references/FASTJava-MoTion.md`
 4. Build or revise the pattern in Pharo syntax.
 5. Return the pattern and a short explanation of key selectors/operators used.
 
@@ -25,7 +26,10 @@ Use this routing consistently:
 - If the request mentions XML, tags/attributes, or FAST XML nodes, use:
 `references/MoTion.md` and `references/FASTXML-MoTion.md`.
 
-If the request is ambiguous, ask whether the target is TypeScript AST or XML AST before writing the final pattern.
+- If the request mentions Java, tags/attributes, or FAST Java nodes, use:
+`references/MoTion.md` and `references/FASTJava-MoTion.md`.
+
+If the request is ambiguous, ask whether the target is TypeScript AST, Java AST or XML AST before writing the final pattern.
 
 ## Output Rules
 
@@ -40,3 +44,4 @@ Always treat these files as source of truth:
 - `references/MoTion.md`
 - `references/FASTTypeScript-MoTion.md`
 - `references/FASTXML-MoTion.md`
+- `references/FASTJava-MoTion.md`
