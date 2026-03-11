@@ -18,94 +18,132 @@ For example:
 parsedClass := JavaSmaCCProgramNodeImporterVisitor new parseCodeString: 'public class Account {
     private int customerNumber;
 }'.
-
-"parsedClass will be a FASTJavaModel containing list of entities, each one of them representing a node of the code; we need to access these #entities and select the top node; In this case it will be a FASTJavaClassDeclaration and we need the below to be able to retrieve it:" 
-
-class := parsedClass allWithType: FASTJavaClassDeclaration. 
-"from the model that was generated, we extract in the FASTJavaClassDeclaration which is the top node of all other entities; and from this entitiy we can start accessing other nodes by traversing the children"
+"parsedClass will be a FASTJavaModel containing list of entities, each one of them representing a node of the code;" 
 
 "Another example to parse a method:"
 parsedMethod := JavaSmaCCProgramNodeImporterVisitor new parseCodeMethodString: 'public void check() {
         System.out.println("Checking Account Balance"); 
 }'.
 
-"parsedMethod will be a FASTJavaModel; we need to access the #entities inside this model and retrieve FASTJavaMethodEntity which is the top entity that allow us to access the children nodes. To retrieve you can use: " 
-method := parsedClass allWithType: FASTJavaMethodEntity.
+"parsedMethod will be a FASTJavaModel containing list of entities, each one of them representing a node of the code;"
 ``` 
 
-Cases for imports in Java file followed by encapsulation (like class), if you want to match them, then you need to retrieve them and retrieve the class. If you need only the class content, no need to retrieve them.
-
-## 3) Core MoTion traversal idioms
-
-### 3.1) Recursive descent (find a node anywhere)
-Use `#'children*'` from the top node to search anywhere in the AST subtree.
+Since the result of parsing is a FASTJavaModel, and since FAST-Java does not contain a top entity (like document for Typescript AST), then we recommend that any MoTion pattern to be matched is a FASTJavaModel pattern, and the entities will be accessed using #allModelEntities.
+So mainly patterns for FASTJava will take this shape:
 
 ```smalltalk
-pattern := FASTJavaClassDeclaration % {
-  #'children*' <=> SomeNodeClass % { } as: #aNode
-}.
-results := pattern collectBindings: { #aNode } for: class.
+pattern := FASTJavaModel % {    
+		#'allModelEntities' <=> FASTJavaTheEntityIamLookingFor % { 
+			....
+		} as: #myEntity.
+	}.
 ```
 
-### 3.2) Immediate child constraint (avoid cross-product matches)
-Use `#children` (no `*`) with list patterns when you need **direct** structural relationships.
+## 3) Example patterns
 
+### 3.1) Switch: exactly 2 cases + 1 default (via SwitchBody children)
 ```smalltalk
-pattern := SomeNodeClass % {
-  #children <=> { #'*_'. ChildNodeClass % { } as: #child. #'*_' }
-}.
-"this means you are looking for a SomeNodeClass that has direct children ChildNodeClass and possibly other children #'*_' "
+string := 'public String getDayType(int day) {
+    switch (day) {
+        case 1:
+            return "Weekday";
+        case 2:
+            return "Weekend";
+        default:
+            return "Invalid day";
+    }
+}'.
+
+
+pattern := FASTJavaModel % {    
+		#'allModelEntities' <=> FASTJavaSwitchStatement % { 
+			#cases  <=> { 
+				FASTJavaLabeledCaseStatement % {} as:#case1. 
+				FASTJavaLabeledCaseStatement % {} as:#case2.  
+				FASTJavaDefaultCaseStatement % {} as:#default. }
+		} as: #amethod.
+	}.
+
+parsedCode := JavaSmaCCProgramNodeImporterVisitor new parseCodeMethodString: string.
+  
+results := pattern collectBindings: {  #amethod. #case1. #case2. #default } for: parsedCode. 
 ```
 
-## 4) Example patterns
-
-### 4.1) Switch: exactly 2 cases + 1 default (via SwitchBody children)
+### 3.2) If/Else: get the else that is not followed by if
 ```smalltalk
-pattern :=  
-results := pattern collectBindings: { #switchStmt. #case1. #case2. #default } for: prog.
+string := 'public class NumberUtils
+{
+    public string ClassifyNumber(int number)
+    {
+        if (number < 0)
+        {
+            return "Negative number";
+        }
+        else if (number == 0)
+        {
+            return "Zero";
+        }
+        else if (number > 0 && number <= 10)
+        {
+            return "Small positive number";
+        }
+        else
+        {
+            return "Large positive number";
+        }
+    }
+
+    public string GradeResult(int score)
+    {
+        if (score < 50)
+        {
+            return "Fail";
+        }
+        else if (score < 65)
+        {
+            return "Pass";
+        }
+        else if (score < 80)
+        {
+            return "Good";
+        }
+        else if (score <= 100)
+        {
+            return "Excellent";
+        }
+        else
+        {
+            return "Invalid score";
+        }
+    }
+}'.
+
+parsedCode := JavaSmaCCProgramNodeImporterVisitor new parseCodeString: string.
+
+pattern := FASTJavaModel % {    
+		#'allModelEntities' <=> FASTJavaIfStatement % { 
+			#'elsePart'  <~=> FASTJavaIfStatement % { } .
+		} as: #amethod
+	}.
+
+results := pattern collectBindings: { #amethod.} for: parsedCode.
 ```
 
-### 4.2) If/Else: direct else clause (avoids descendant cross-products)
-```smalltalk
-pattern :=  
-results := pattern collectBindings: { #ifStmt. #elseClause } for: prog.
-```
 
-### 4.3) Try/catch: checking nested try/catch
-```smalltalk
-pattern := 
-results := pattern collectBindings: { #outerTry. #innerTry } for: prog. 
-```
+## 4) Debugging tips
 
-### 4.4) Counting 3 methods in class
-```smalltalk
-string := 
-```
-
-### 4.5) Check if method is empty
-```smalltalk
- 
-```
-
-### 4.6) Check if any function or method contain empty else and retrieve the owner
-```smalltalk
- 
-```
-
-## 5) Debugging tips
-
-### 5.1) Inspect children to learn structure
+### 4.1) Inspect children to learn structure
 ```smalltalk
 node children collect: #class.
 node children.
 ```
 
-### 5.2) Why you got too many matches
+### 4.2) Why you got too many matches
 - Using `#'children*'` matches *descendants*, producing cross-products when nested structures exist.
 - Prefer `#children` when you mean “direct child”.
 
-### 6) FASTJava entities
-In order to express a pattern effitiently, MoTion needs to know the class names representing the entities of Java. This is why we are listing them here in accordance to there slots that can be used while expressing a MoTion pattern. In Java the list is more updated than any other metamodel because FASTJava has been implemented long time ago.
+## 5) FASTJava entities
+In order to express a pattern efficiently, MoTion needs to know the class names representing the entities of Java. This is why we are listing them here in accordance to their slots that can be used while expressing a MoTion pattern. In Java the list is more updated than any other metamodel because FASTJava has been implemented long time ago.
 ```
  FASTJavaAnnotation, slots: elements arrayOwner parentAnnotation javaModifierOwner name invokedIn 
 FASTJavaArrayAccess, slots: javaVariableAssignmentOwner receiverOwner assignedIn parentExpressionLeft parentExpressionRight parentConditionalStatement expressionStatementOwner returnOwner parentExpression argumentOwner 
